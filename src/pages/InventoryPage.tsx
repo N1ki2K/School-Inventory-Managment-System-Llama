@@ -30,6 +30,14 @@ export function InventoryPage() {
       status: 'Maintenance',
       lastUpdated: '2024-01-13',
     },
+    {
+      id: 4,
+      name: 'marian',
+      category: 'Office Equipment',
+      location: 'Main Office',
+      status: 'Debel',
+      lastUpdated: '2007-01-13',
+    },
   ]
 
   const filteredItems = inventoryItems.filter(item =>
