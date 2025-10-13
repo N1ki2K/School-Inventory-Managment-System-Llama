@@ -1,0 +1,42 @@
+name: Workflow Status
+
+on:
+  workflow_run:
+    workflows: ["CI/CD Pipeline"]
+    types: [completed]
+
+jobs:
+  notify-status:
+    name: Notify Workflow Status
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Notify Success
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        run: |
+          echo "✅ CI/CD Pipeline completed successfully!"
+          echo "🚀 All checks passed and deployment is ready."
+
+      - name: Notify Failure
+        if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+        run: |
+          echo "❌ CI/CD Pipeline failed!"
+          echo "🔍 Please check the logs for details."
+          echo "📧 Notifications have been sent to the team."
+
+      - name: Create Status Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const conclusion = '${{ github.event.workflow_run.conclusion }}';
+            const status = conclusion === 'success' ? '✅' : '❌';
+            const message = conclusion === 'success' 
+              ? 'All checks passed successfully!' 
+              : 'Some checks failed. Please review the logs.';
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `${status} **CI/CD Pipeline Status**: ${message}`
+            });

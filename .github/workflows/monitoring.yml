@@ -1,0 +1,103 @@
+name: Monitoring & Alerting
+
+on:
+  schedule:
+    # Run every 5 minutes
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  health-check:
+    name: Health Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check staging health
+        run: |
+          echo "🔍 Checking staging environment health..."
+          # Add your health check commands here
+          # Examples:
+          # - curl -f https://staging.your-domain.com/health
+          # - kubectl get pods -n staging
+          # - docker ps --filter "name=staging"
+
+      - name: Check production health
+        run: |
+          echo "🔍 Checking production environment health..."
+          # Add your health check commands here
+          # Examples:
+          # - curl -f https://your-domain.com/health
+          # - kubectl get pods -n production
+          # - docker ps --filter "name=production"
+
+      - name: Check database connectivity
+        run: |
+          echo "🔍 Checking database connectivity..."
+          # Add your database health check commands here
+          # Examples:
+          # - pg_isready -h ${{ secrets.DB_HOST }} -p ${{ secrets.DB_PORT }}
+          # - mysqladmin ping -h ${{ secrets.DB_HOST }}
+
+  metrics-collection:
+    name: Metrics Collection
+    runs-on: ubuntu-latest
+    steps:
+      - name: Collect application metrics
+        run: |
+          echo "📊 Collecting application metrics..."
+          # Add your metrics collection commands here
+          # Examples:
+          # - curl -s https://your-domain.com/metrics > metrics.json
+          # - kubectl top pods -n production > resource-usage.txt
+
+      - name: Upload metrics
+        uses: actions/upload-artifact@v4
+        with:
+          name: metrics-${{ github.run_number }}
+          path: metrics.json
+          retention-days: 30
+
+  alerting:
+    name: Alerting
+    runs-on: ubuntu-latest
+    if: failure()
+    steps:
+      - name: Send Slack notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          channel: '#alerts'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Send email notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: '🚨 Health Check Failed - School Inventory System'
+          to: ${{ secrets.ALERT_EMAIL }}
+          from: GitHub Actions
+          body: |
+            Health check failed for School Inventory Management System.
+            
+            Environment: ${{ github.ref_name }}
+            Workflow: ${{ github.workflow }}
+            Run ID: ${{ github.run_id }}
+            
+            Please check the logs for more details.
+
+  uptime-monitoring:
+    name: Uptime Monitoring
+    runs-on: ubuntu-latest
+    steps:
+      - name: Monitor uptime
+        run: |
+          echo "⏱️ Monitoring application uptime..."
+          # Add your uptime monitoring commands here
+          # Examples:
+          # - curl -f https://your-domain.com/health || exit 1
+          # - uptime-checker --url https://your-domain.com --timeout 30

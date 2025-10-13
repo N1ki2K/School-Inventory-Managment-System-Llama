@@ -1,5 +1,9 @@
 # School Inventory Management System
 
+[![CI/CD Pipeline](https://github.com/N1ki2K/School-Inventory-Managment-System-Llama/actions/workflows/ci.yml/badge.svg)](https://github.com/N1ki2K/School-Inventory-Managment-System-Llama/actions/workflows/ci.yml)
+[![Dependency Management](https://github.com/N1ki2K/School-Inventory-Managment-System-Llama/actions/workflows/dependencies.yml/badge.svg)](https://github.com/N1ki2K/School-Inventory-Managment-System-Llama/actions/workflows/dependencies.yml)
+[![Performance Testing](https://github.com/N1ki2K/School-Inventory-Managment-System-Llama/actions/workflows/performance.yml/badge.svg)](https://github.com/N1ki2K/School-Inventory-Managment-System-Llama/actions/workflows/performance.yml)
+
 A modern, full-featured inventory management system built with React, TypeScript, and Vite.
 
 ## 🚀 Features
@@ -122,6 +126,34 @@ Run tests with UI:
 ```bash
 pnpm test:ui
 ```
+
+## 🚀 CI/CD Pipeline
+
+This project includes a comprehensive CI/CD pipeline with GitHub Actions:
+
+### Automated Workflows
+- **CI/CD Pipeline**: Lint, test, build, and deploy
+- **Dependency Management**: Automated updates and security scanning
+- **Release Management**: Automated releases with Docker images
+- **Preview Deployments**: Automatic previews for pull requests
+- **Performance Testing**: Lighthouse, bundle analysis, and load testing
+- **Infrastructure Management**: Terraform and database migrations
+- **Monitoring & Alerting**: Health checks and notifications
+
+### Quality Gates
+- ✅ Code linting and type checking
+- ✅ Automated testing with Playwright
+- ✅ Security vulnerability scanning
+- ✅ Performance testing with Lighthouse
+- ✅ Docker image building and scanning
+- ✅ Automated dependency updates
+
+### Deployment Strategy
+- **Staging**: Automatic deployment on `develop` branch
+- **Production**: Manual approval required for `main` branch
+- **Preview**: Automatic preview deployments for pull requests
+
+For detailed CI/CD documentation, see [.github/README.md](.github/README.md)
 
 ## 📁 Project Structure
 

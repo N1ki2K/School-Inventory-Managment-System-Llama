@@ -1,0 +1,54 @@
+name: Environment Setup
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to setup'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+        default: staging
+
+jobs:
+  setup-environment:
+    name: Setup ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup environment variables
+        run: |
+          echo "Setting up ${{ github.event.inputs.environment }} environment..."
+          
+          if [ "${{ github.event.inputs.environment }}" = "staging" ]; then
+            echo "VITE_GRAPHQL_ENDPOINT=https://staging-api.your-domain.com/graphql" >> $GITHUB_ENV
+            echo "VITE_API_BASE_URL=https://staging-api.your-domain.com/api" >> $GITHUB_ENV
+            echo "VITE_ENABLE_DEBUG=true" >> $GITHUB_ENV
+          elif [ "${{ github.event.inputs.environment }}" = "production" ]; then
+            echo "VITE_GRAPHQL_ENDPOINT=https://api.your-domain.com/graphql" >> $GITHUB_ENV
+            echo "VITE_API_BASE_URL=https://api.your-domain.com/api" >> $GITHUB_ENV
+            echo "VITE_ENABLE_DEBUG=false" >> $GITHUB_ENV
+          fi
+
+      - name: Deploy to environment
+        run: |
+          echo "🚀 Deploying to ${{ github.event.inputs.environment }}..."
+          
+          # Add your deployment commands here
+          # Examples:
+          # - kubectl apply -f k8s/${{ github.event.inputs.environment }}/
+          # - docker-compose -f docker-compose.${{ github.event.inputs.environment }}.yml up -d
+          # - helm upgrade --install app ./helm-chart --namespace ${{ github.event.inputs.environment }}
+
+      - name: Health check
+        run: |
+          echo "🔍 Performing health check..."
+          # Add your health check commands here
+          # Examples:
+          # - curl -f https://${{ github.event.inputs.environment }}.your-domain.com/health
+          # - kubectl get pods -n ${{ github.event.inputs.environment }}

@@ -1,0 +1,72 @@
+name: Preview Deployment
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main, develop]
+
+jobs:
+  preview:
+    name: Deploy Preview
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '8'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build application
+        run: pnpm build
+
+      - name: Deploy to Preview
+        run: |
+          echo "🚀 Deploying preview for PR #${{ github.event.pull_request.number }}"
+          echo "Preview URL: https://preview-${{ github.event.pull_request.number }}.your-domain.com"
+          # Add your preview deployment logic here
+          # Examples:
+          # - Deploy to Vercel: vercel --token ${{ secrets.VERCEL_TOKEN }}
+          # - Deploy to Netlify: netlify deploy --dir=dist --prod
+          # - Deploy to AWS S3: aws s3 sync dist/ s3://your-bucket/preview-${{ github.event.pull_request.number }}/
+
+      - name: Comment PR with Preview URL
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🚀 **Preview deployed successfully!**
+              
+              **Preview URL:** https://preview-${{ github.event.pull_request.number }}.your-domain.com
+              
+              The preview will be automatically updated when you push new commits to this PR.
+              
+              **Note:** This preview will be automatically deleted when the PR is closed.`
+            })
+
+  cleanup:
+    name: Cleanup Preview
+    runs-on: ubuntu-latest
+    if: github.event.action == 'closed'
+    steps:
+      - name: Cleanup Preview Environment
+        run: |
+          echo "🧹 Cleaning up preview for PR #${{ github.event.pull_request.number }}"
+          # Add your cleanup logic here
+          # Examples:
+          # - Remove from Vercel: vercel remove preview-${{ github.event.pull_request.number }}
+          # - Remove from Netlify: netlify sites:delete preview-${{ github.event.pull_request.number }}
+          # - Remove from AWS S3: aws s3 rm s3://your-bucket/preview-${{ github.event.pull_request.number }}/ --recursive

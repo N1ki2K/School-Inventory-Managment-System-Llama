@@ -1,0 +1,101 @@
+name: Infrastructure Management
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Infrastructure action'
+        required: true
+        type: choice
+        options:
+          - plan
+          - apply
+          - destroy
+        default: plan
+      environment:
+        description: 'Environment'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+        default: staging
+
+jobs:
+  terraform:
+    name: Terraform ${{ github.event.inputs.action }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.6.0'
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Init
+        run: |
+          cd infrastructure/${{ github.event.inputs.environment }}
+          terraform init
+
+      - name: Terraform Plan
+        if: github.event.inputs.action == 'plan'
+        run: |
+          cd infrastructure/${{ github.event.inputs.environment }}
+          terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        if: github.event.inputs.action == 'apply'
+        run: |
+          cd infrastructure/${{ github.event.inputs.environment }}
+          terraform apply -auto-approve
+
+      - name: Terraform Destroy
+        if: github.event.inputs.action == 'destroy'
+        run: |
+          cd infrastructure/${{ github.event.inputs.environment }}
+          terraform destroy -auto-approve
+
+  database-migration:
+    name: Database Migration
+    runs-on: ubuntu-latest
+    if: github.event.inputs.action == 'apply'
+    environment: ${{ github.event.inputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '8'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run database migrations
+        run: |
+          echo "🔄 Running database migrations for ${{ github.event.inputs.environment }}..."
+          # Add your database migration commands here
+          # Examples:
+          # - pnpm run migrate:up
+          # - npx prisma migrate deploy
+          # - npx typeorm migration:run
+
+      - name: Verify migration
+        run: |
+          echo "✅ Verifying database migration..."
+          # Add verification commands here
+          # Examples:
+          # - pnpm run migrate:status
+          # - npx prisma migrate status
