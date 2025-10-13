@@ -13,7 +13,7 @@ export function HomePage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground">
-          Welcome to the School Inventory Management System
+          Welcome to the School Inventory Management System2
         </p>
       </div>
 
