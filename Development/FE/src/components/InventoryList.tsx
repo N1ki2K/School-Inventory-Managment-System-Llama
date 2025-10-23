@@ -1,4 +1,4 @@
-import { Projector, Laptop, Highlighter, UsbIcon, Mouse, Briefcase, Package } from 'lucide-react'
+import { Projector, Laptop, Highlighter, UsbIcon, Mouse, Briefcase, Package, Search } from 'lucide-react'
 
 interface InventoryItem {
   id: string
@@ -21,6 +21,8 @@ interface InventoryListProps {
   items?: InventoryItem[]
   loading?: boolean
   onStatusChange?: (id: string, status: string) => void
+  searchTerm?: string
+  onSearchChange?: (term: string) => void
 }
 
 const defaultItems: InventoryItem[] = [
@@ -32,7 +34,7 @@ const defaultItems: InventoryItem[] = [
   { id: '6', name: 'Mouse', status: 'Available', icon: 'briefcase' },
 ]
 
-export function InventoryList({ items = defaultItems, loading = false, onStatusChange }: InventoryListProps) {
+export function InventoryList({ items = defaultItems, loading = false, onStatusChange, searchTerm = '', onSearchChange }: InventoryListProps) {
   const getActionButton = (item: InventoryItem) => {
     const { id, status } = item
     
@@ -109,7 +111,21 @@ export function InventoryList({ items = defaultItems, loading = false, onStatusC
   return (
     <div className="flex-1 bg-gray-50 overflow-auto">
       <div className="p-8 max-w-7xl">
-        <h1 className="text-3xl font-semibold text-black mb-8">School Inventory</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-semibold text-black">School Inventory</h1>
+          
+          {/* Search Bar */}
+          <div className="relative w-80">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search items..."
+              value={searchTerm}
+              onChange={(e) => onSearchChange?.(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+            />
+          </div>
+        </div>
         
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           {/* Header */}

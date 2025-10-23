@@ -3,9 +3,13 @@ import { ChevronRight } from 'lucide-react'
 interface InventorySidebarProps {
   onAddItem?: () => void
   onRequestItem?: () => void
+  onFilterChange?: (filter: string) => void
+  currentFilter?: string
 }
 
-export function InventorySidebar({ onAddItem, onRequestItem }: InventorySidebarProps) {
+export function InventorySidebar({ onAddItem, onRequestItem, onFilterChange, currentFilter = 'All' }: InventorySidebarProps) {
+  const filters = ['All', 'Available', 'In Use', 'Needs Repair']
+
   return (
     <div className="w-64 bg-white border-r border-gray-200 p-6 space-y-6 flex-shrink-0">
       {/* Category Section */}
@@ -23,9 +27,17 @@ export function InventorySidebar({ onAddItem, onRequestItem }: InventorySidebarP
         <h3 className="text-sm font-semibold text-black">Status</h3>
         
         <div className="space-y-2">
-          <div className="text-sm text-gray-700 cursor-pointer hover:text-black">All</div>
-          <div className="text-sm text-gray-700 cursor-pointer hover:text-black">Available</div>
-          <div className="text-sm text-gray-700 cursor-pointer hover:text-black">Needs Repair</div>
+          {filters.map(filter => (
+            <div
+              key={filter}
+              onClick={() => onFilterChange?.(filter)}
+              className={`text-sm cursor-pointer hover:text-black transition-colors ${
+                currentFilter === filter ? 'text-black font-medium' : 'text-gray-700'
+              }`}
+            >
+              {filter}
+            </div>
+          ))}
         </div>
       </div>
 
