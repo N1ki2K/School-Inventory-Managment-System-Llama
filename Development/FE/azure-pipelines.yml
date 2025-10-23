@@ -32,11 +32,17 @@ steps:
     pnpm build
   displayName: 'Build Backend'
 
-# Run Frontend Tests (optional)
+# Run Tests
 - script: |
     cd Development/FE
-    echo "Tests not configured yet - skipping"
+    pnpm test
   displayName: 'Run Frontend Tests'
+  continueOnError: true
+
+- script: |
+    cd Development/BE
+    pnpm test
+  displayName: 'Run Backend Tests'
   continueOnError: true
 
 # Archive Frontend Build Artifacts

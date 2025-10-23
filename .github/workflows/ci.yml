@@ -60,7 +60,13 @@ jobs:
     - name: Run Frontend Tests
       run: |
         cd Development/FE
-        echo "Tests not configured yet - skipping"
+        pnpm test
+      continue-on-error: true
+    
+    - name: Run Backend Tests
+      run: |
+        cd Development/BE
+        pnpm test
       continue-on-error: true
     
     - name: Upload Frontend Artifacts
