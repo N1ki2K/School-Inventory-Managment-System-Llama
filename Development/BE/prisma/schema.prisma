@@ -1,0 +1,45 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      String   @default("user") // "admin" or "user"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model InventoryItem {
+  id          String   @id @default(uuid())
+  name        String
+  category    String
+  location    String
+  status      String   @default("Available") // "Available", "In Use", "Needs Repair"
+  icon        String   @default("package")
+  description String?
+  quantity    Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Request {
+  id          String   @id @default(uuid())
+  itemId      String
+  itemName    String
+  requestedBy String
+  status      String   @default("Pending") // "Pending", "Approved", "Rejected"
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
