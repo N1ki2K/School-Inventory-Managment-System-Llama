@@ -10,7 +10,7 @@ import { locationsRouter } from './routes/locations.js'
 dotenv.config()
 
 const app = express()
-const PORT = process.env.PORT || 3001
+const PORT = parseInt(process.env.PORT || '3001', 10)
 
 // Middleware
 app.use(cors({
@@ -32,8 +32,10 @@ app.get('/api/health', (_req, res) => {
 })
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`)
-  console.log(`📊 API available at http://localhost:${PORT}/api`)
+const HOST = process.env.HOST || '0.0.0.0' // Bind to all interfaces for external access
+app.listen(PORT, HOST, () => {
+  console.log(`🚀 Server running on http://${HOST}:${PORT}`)
+  console.log(`📊 API available at http://${HOST}:${PORT}/api`)
+  console.log(`🌍 Accessible from network: http://<your-ip>:${PORT}`)
 })
 
