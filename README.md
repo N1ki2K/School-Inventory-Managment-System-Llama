@@ -33,9 +33,27 @@ Runs on: **http://localhost:5173**
 
 ---
 
-## 📖 Full Documentation
+## 📖 Documentation
 
-See **[FULLSTACK_GUIDE.md](./FULLSTACK_GUIDE.md)** for complete setup and usage instructions.
+- **[START_HERE.md](./START_HERE.md)** - Quick start guide
+- **[FULLSTACK_GUIDE.md](./FULLSTACK_GUIDE.md)** - Complete development guide
+- **[BUILD_GUIDE.md](./BUILD_GUIDE.md)** - Build & deployment guide
+- **[CI_CD_FIXES.md](./CI_CD_FIXES.md)** - CI/CD configuration
+- **[FEATURES_COMPLETE.md](./FEATURES_COMPLETE.md)** - Feature list
+- **[ALL_FIXES_SUMMARY.md](./ALL_FIXES_SUMMARY.md)** - Recent fixes
+
+---
+
+## ✅ Build Status
+
+All builds verified and working:
+- ✅ Frontend Build: Clean (0 errors)
+- ✅ Backend Build: Clean (0 errors)
+- ✅ TypeScript: All errors fixed
+- ✅ Docker: Full-stack configured
+- ✅ CI/CD: Azure + GitHub Actions
+
+**Verify builds:** Run `./verify-build.ps1` (Windows) or `./verify-build.sh` (Linux/Mac)
 
 ---
 

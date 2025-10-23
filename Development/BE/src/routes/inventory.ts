@@ -1,11 +1,11 @@
-import { Router } from 'express'
+import { Router, type Router as RouterType } from 'express'
 import { PrismaClient } from '@prisma/client'
 
-const router = Router()
+const router: RouterType = Router()
 const prisma = new PrismaClient()
 
 // Get all inventory items
-router.get('/', async (req, res) => {
+router.get('/', async (_req, res) => {
   try {
     const items = await prisma.inventoryItem.findMany({
       orderBy: { createdAt: 'desc' }
@@ -25,9 +25,9 @@ router.get('/:id', async (req, res) => {
     if (!item) {
       return res.status(404).json({ error: 'Item not found' })
     }
-    res.json(item)
+    return res.json(item)
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch item' })
+    return res.status(500).json({ error: 'Failed to fetch item' })
   }
 })
 

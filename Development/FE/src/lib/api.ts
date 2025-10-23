@@ -105,6 +105,42 @@ class ApiClient {
       body: JSON.stringify({ status }),
     })
   }
+
+  // Categories methods
+  async getCategories() {
+    return this.request<string[]>('/categories')
+  }
+
+  async createCategory(name: string) {
+    return this.request<{ name: string }>('/categories', {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    })
+  }
+
+  async deleteCategory(name: string) {
+    return this.request<{ message: string }>(`/categories/${encodeURIComponent(name)}`, {
+      method: 'DELETE',
+    })
+  }
+
+  // Locations methods
+  async getLocations() {
+    return this.request<string[]>('/locations')
+  }
+
+  async createLocation(name: string) {
+    return this.request<{ name: string }>('/locations', {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    })
+  }
+
+  async deleteLocation(name: string) {
+    return this.request<{ message: string }>(`/locations/${encodeURIComponent(name)}`, {
+      method: 'DELETE',
+    })
+  }
 }
 
 // Types

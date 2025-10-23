@@ -2,12 +2,16 @@ import { useEffect, useState } from 'react'
 import { InventorySidebar } from '../components/InventorySidebar'
 import { InventoryList } from '../components/InventoryList'
 import { AddItemModal } from '../components/AddItemModal'
+import { DeleteItemModal } from '../components/DeleteItemModal'
 import { api, type InventoryItem } from '../lib/api'
 
 export function InventoryPage() {
   const [items, setItems] = useState<InventoryItem[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [itemToDelete, setItemToDelete] = useState<{ id: string; name: string } | null>(null)
+  const [deleting, setDeleting] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState<string>('All')
 
@@ -53,6 +57,27 @@ export function InventoryPage() {
     }
   }
 
+  const handleDeleteClick = (id: string, name: string) => {
+    setItemToDelete({ id, name })
+    setShowDeleteModal(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!itemToDelete) return
+    setDeleting(true)
+    try {
+      await api.deleteInventoryItem(itemToDelete.id)
+      setShowDeleteModal(false)
+      setItemToDelete(null)
+      await loadItems()
+    } catch (error) {
+      console.error('Failed to delete item:', error)
+      alert('Failed to delete item')
+    } finally {
+      setDeleting(false)
+    }
+  }
+
   return (
     <>
       <div className="flex h-[calc(100vh-64px)] bg-gray-50">
@@ -71,6 +96,7 @@ export function InventoryPage() {
           }))}
           loading={loading}
           onStatusChange={handleStatusChange}
+          onDelete={handleDeleteClick}
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
         />
@@ -80,6 +106,17 @@ export function InventoryPage() {
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onSuccess={loadItems}
+      />
+
+      <DeleteItemModal
+        isOpen={showDeleteModal}
+        itemName={itemToDelete?.name || ''}
+        onClose={() => {
+          setShowDeleteModal(false)
+          setItemToDelete(null)
+        }}
+        onConfirm={handleDeleteConfirm}
+        loading={deleting}
       />
     </>
   )

@@ -1,12 +1,50 @@
-import { Package, Users, BarChart3, MapPin } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Package, Users, MapPin } from 'lucide-react'
+import { api, type InventoryItem } from '../lib/api'
 
 export function HomePage() {
+  const [items, setItems] = useState<InventoryItem[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadItems()
+  }, [])
+
+  const loadItems = async () => {
+    try {
+      const data = await api.getInventoryItems()
+      setItems(data)
+    } catch (error) {
+      console.error('Failed to load items:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const totalItems = items.length
+  const availableItems = items.filter(i => i.status === 'Available').length
+  const inUseItems = items.filter(i => i.status === 'In Use').length
+  const uniqueLocations = new Set(items.map(i => i.location)).size
+
   const stats = [
-    { label: 'Total Items', value: '156', icon: Package, color: 'bg-blue-50 text-blue-600' },
-    { label: 'Available', value: '89', icon: Package, color: 'bg-green-50 text-green-600' },
-    { label: 'In Use', value: '45', icon: Users, color: 'bg-purple-50 text-purple-600' },
-    { label: 'Locations', value: '12', icon: MapPin, color: 'bg-orange-50 text-orange-600' },
+    { label: 'Total Items', value: totalItems.toString(), icon: Package, color: 'bg-blue-50 text-blue-600' },
+    { label: 'Available', value: availableItems.toString(), icon: Package, color: 'bg-green-50 text-green-600' },
+    { label: 'In Use', value: inUseItems.toString(), icon: Users, color: 'bg-purple-50 text-purple-600' },
+    { label: 'Locations', value: uniqueLocations.toString(), icon: MapPin, color: 'bg-orange-50 text-orange-600' },
   ]
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold text-black">Dashboard</h1>
+          <p className="text-gray-600 mt-2">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  const recentItems = items.slice(0, 3)
 
   return (
     <div className="space-y-8">
@@ -42,29 +80,20 @@ export function HomePage() {
       {/* Recent Activity & Quick Actions */}
       <div className="grid gap-6 md:grid-cols-2">
         <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-black mb-4">Recent Activity</h3>
+          <h3 className="text-lg font-semibold text-black mb-4">Recent Items</h3>
           <div className="space-y-4">
-            <div className="flex items-start space-x-3">
-              <div className="h-2 w-2 bg-green-500 rounded-full mt-2" />
-              <div>
-                <p className="text-sm text-black font-medium">New item added</p>
-                <p className="text-sm text-gray-500">Laptop Dell XPS 13 - 2 hours ago</p>
+            {recentItems.map(item => (
+              <div key={item.id} className="flex items-start space-x-3">
+                <div className={`h-2 w-2 rounded-full mt-2 ${
+                  item.status === 'Available' ? 'bg-green-500' :
+                  item.status === 'In Use' ? 'bg-blue-500' : 'bg-red-500'
+                }`} />
+                <div>
+                  <p className="text-sm text-black font-medium">{item.name}</p>
+                  <p className="text-sm text-gray-500">{item.status} - {item.location}</p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-start space-x-3">
-              <div className="h-2 w-2 bg-blue-500 rounded-full mt-2" />
-              <div>
-                <p className="text-sm text-black font-medium">Item checked out</p>
-                <p className="text-sm text-gray-500">Projector Epson - 4 hours ago</p>
-              </div>
-            </div>
-            <div className="flex items-start space-x-3">
-              <div className="h-2 w-2 bg-yellow-500 rounded-full mt-2" />
-              <div>
-                <p className="text-sm text-black font-medium">Maintenance needed</p>
-                <p className="text-sm text-gray-500">Printer HP - 1 day ago</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 

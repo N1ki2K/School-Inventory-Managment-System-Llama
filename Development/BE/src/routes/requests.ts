@@ -1,11 +1,11 @@
-import { Router } from 'express'
+import { Router, type Router as RouterType } from 'express'
 import { PrismaClient } from '@prisma/client'
 
-const router = Router()
+const router: RouterType = Router()
 const prisma = new PrismaClient()
 
 // Get all requests
-router.get('/', async (req, res) => {
+router.get('/', async (_req, res) => {
   try {
     const requests = await prisma.request.findMany({
       orderBy: { createdAt: 'desc' }

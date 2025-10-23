@@ -1,8 +1,85 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { User, MapPin, Tag, Bell, Shield } from 'lucide-react'
+import { api } from '../lib/api'
 
 export function SettingsPage() {
   const [activeTab, setActiveTab] = useState('profile')
+  const [categories, setCategories] = useState<string[]>([])
+  const [locations, setLocations] = useState<string[]>([])
+  const [newCategory, setNewCategory] = useState('')
+  const [newLocation, setNewLocation] = useState('')
+
+  useEffect(() => {
+    if (activeTab === 'categories') {
+      loadCategories()
+    } else if (activeTab === 'locations') {
+      loadLocations()
+    }
+  }, [activeTab])
+
+  const loadCategories = async () => {
+    try {
+      const data = await api.getCategories()
+      setCategories(data)
+    } catch (error) {
+      console.error('Failed to load categories:', error)
+    }
+  }
+
+  const loadLocations = async () => {
+    try {
+      const data = await api.getLocations()
+      setLocations(data)
+    } catch (error) {
+      console.error('Failed to load locations:', error)
+    }
+  }
+
+  const handleAddCategory = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newCategory.trim()) return
+    try {
+      await api.createCategory(newCategory)
+      setNewCategory('')
+      loadCategories()
+    } catch (error) {
+      console.error('Failed to add category:', error)
+      alert('Failed to add category')
+    }
+  }
+
+  const handleDeleteCategory = async (name: string) => {
+    if (!confirm(`Delete category "${name}"?`)) return
+    try {
+      await api.deleteCategory(name)
+      loadCategories()
+    } catch (error) {
+      console.error('Failed to delete category:', error)
+    }
+  }
+
+  const handleAddLocation = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newLocation.trim()) return
+    try {
+      await api.createLocation(newLocation)
+      setNewLocation('')
+      loadLocations()
+    } catch (error) {
+      console.error('Failed to add location:', error)
+      alert('Failed to add location')
+    }
+  }
+
+  const handleDeleteLocation = async (name: string) => {
+    if (!confirm(`Delete location "${name}"?`)) return
+    try {
+      await api.deleteLocation(name)
+      loadLocations()
+    } catch (error) {
+      console.error('Failed to delete location:', error)
+    }
+  }
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
@@ -85,16 +162,33 @@ export function SettingsPage() {
             <div className="space-y-6">
               <h2 className="text-xl font-semibold text-black">Manage Categories</h2>
               <div className="space-y-3">
-                {['Electronics', 'Office Supplies', 'Furniture', 'Audio/Visual', 'Sports Equipment', 'Other'].map(cat => (
+                {categories.map(cat => (
                   <div key={cat} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
                     <span className="text-gray-700">{cat}</span>
-                    <button className="text-red-600 hover:text-red-700 text-sm">Delete</button>
+                    <button 
+                      onClick={() => handleDeleteCategory(cat)}
+                      className="text-red-600 hover:text-red-700 text-sm"
+                    >
+                      Delete
+                    </button>
                   </div>
                 ))}
               </div>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                Add Category
-              </button>
+              <form onSubmit={handleAddCategory} className="flex gap-3">
+                <input
+                  type="text"
+                  value={newCategory}
+                  onChange={(e) => setNewCategory(e.target.value)}
+                  placeholder="New category name"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                />
+                <button 
+                  type="submit"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+                >
+                  Add Category
+                </button>
+              </form>
             </div>
           )}
 
@@ -102,16 +196,33 @@ export function SettingsPage() {
             <div className="space-y-6">
               <h2 className="text-xl font-semibold text-black">Manage Locations</h2>
               <div className="space-y-3">
-                {['Computer Lab A', 'Computer Lab B', 'Classroom 101', 'Main Office', 'Storage Room', 'IT Department'].map(loc => (
+                {locations.map(loc => (
                   <div key={loc} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
                     <span className="text-gray-700">{loc}</span>
-                    <button className="text-red-600 hover:text-red-700 text-sm">Delete</button>
+                    <button 
+                      onClick={() => handleDeleteLocation(loc)}
+                      className="text-red-600 hover:text-red-700 text-sm"
+                    >
+                      Delete
+                    </button>
                   </div>
                 ))}
               </div>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                Add Location
-              </button>
+              <form onSubmit={handleAddLocation} className="flex gap-3">
+                <input
+                  type="text"
+                  value={newLocation}
+                  onChange={(e) => setNewLocation(e.target.value)}
+                  placeholder="New location name"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                />
+                <button 
+                  type="submit"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+                >
+                  Add Location
+                </button>
+              </form>
             </div>
           )}
 

@@ -1,0 +1,16 @@
+node_modules
+dist
+npm-debug.log
+.env
+.DS_Store
+*.log
+coverage
+.vscode
+.idea
+*.swp
+*.swo
+.git
+tests
+playwright-report
+test-results
+

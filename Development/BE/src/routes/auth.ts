@@ -1,9 +1,9 @@
-import { Router } from 'express'
+import { Router, type Router as RouterType } from 'express'
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
-const router = Router()
+const router: RouterType = Router()
 const prisma = new PrismaClient()
 
 // Register
@@ -40,12 +40,12 @@ router.post('/register', async (req, res) => {
       { expiresIn: '7d' }
     )
     
-    res.status(201).json({
+    return res.status(201).json({
       user: { id: user.id, email: user.email, name: user.name, role: user.role },
       token
     })
   } catch (error) {
-    res.status(500).json({ error: 'Failed to register user' })
+    return res.status(500).json({ error: 'Failed to register user' })
   }
 })
 
@@ -77,12 +77,12 @@ router.post('/login', async (req, res) => {
       { expiresIn: '7d' }
     )
     
-    res.json({
+    return res.json({
       user: { id: user.id, email: user.email, name: user.name, role: user.role },
       token
     })
   } catch (error) {
-    res.status(500).json({ error: 'Failed to login' })
+    return res.status(500).json({ error: 'Failed to login' })
   }
 })
 
@@ -106,9 +106,9 @@ router.get('/me', async (req, res) => {
       return res.status(404).json({ error: 'User not found' })
     }
     
-    res.json(user)
+    return res.json(user)
   } catch (error) {
-    res.status(401).json({ error: 'Invalid token' })
+    return res.status(401).json({ error: 'Invalid token' })
   }
 })
 

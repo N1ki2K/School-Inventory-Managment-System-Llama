@@ -1,4 +1,4 @@
-import { Projector, Laptop, Highlighter, UsbIcon, Mouse, Briefcase, Package, Search } from 'lucide-react'
+import { Projector, Laptop, Highlighter, UsbIcon, Mouse, Briefcase, Package, Search, Trash2 } from 'lucide-react'
 
 interface InventoryItem {
   id: string
@@ -21,6 +21,7 @@ interface InventoryListProps {
   items?: InventoryItem[]
   loading?: boolean
   onStatusChange?: (id: string, status: string) => void
+  onDelete?: (id: string, name: string) => void
   searchTerm?: string
   onSearchChange?: (term: string) => void
 }
@@ -34,7 +35,7 @@ const defaultItems: InventoryItem[] = [
   { id: '6', name: 'Mouse', status: 'Available', icon: 'briefcase' },
 ]
 
-export function InventoryList({ items = defaultItems, loading = false, onStatusChange, searchTerm = '', onSearchChange }: InventoryListProps) {
+export function InventoryList({ items = defaultItems, loading = false, onStatusChange, onDelete, searchTerm = '', onSearchChange }: InventoryListProps) {
   const getActionButton = (item: InventoryItem) => {
     const { id, status } = item
     
@@ -129,10 +130,11 @@ export function InventoryList({ items = defaultItems, loading = false, onStatusC
         
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           {/* Header */}
-          <div className="grid grid-cols-[60px_1fr_150px_150px] gap-4 px-4 py-3 mb-2">
+          <div className="grid grid-cols-[60px_1fr_150px_150px_60px] gap-4 px-4 py-3 mb-2">
             <div className="text-sm font-medium text-gray-600">Item</div>
             <div></div>
             <div className="text-sm font-medium text-gray-600">Status</div>
+            <div></div>
             <div></div>
           </div>
 
@@ -143,7 +145,7 @@ export function InventoryList({ items = defaultItems, loading = false, onStatusC
               return (
                 <div
                   key={item.id}
-                  className="grid grid-cols-[60px_1fr_150px_150px] gap-4 items-center px-4 py-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="grid grid-cols-[60px_1fr_150px_150px_60px] gap-4 items-center px-4 py-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-lg">
                     <Icon className="h-6 w-6 text-gray-700" />
@@ -154,6 +156,15 @@ export function InventoryList({ items = defaultItems, loading = false, onStatusC
                   </div>
                   <div className="flex justify-end">
                     {getActionButton(item)}
+                  </div>
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => onDelete?.(item.id, item.name)}
+                      className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                      title="Delete item"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
                 </div>
               )

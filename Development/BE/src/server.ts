@@ -4,6 +4,8 @@ import dotenv from 'dotenv'
 import { inventoryRouter } from './routes/inventory.js'
 import { authRouter } from './routes/auth.js'
 import { requestRouter } from './routes/requests.js'
+import { categoriesRouter } from './routes/categories.js'
+import { locationsRouter } from './routes/locations.js'
 
 dotenv.config()
 
@@ -21,9 +23,11 @@ app.use(express.json())
 app.use('/api/auth', authRouter)
 app.use('/api/inventory', inventoryRouter)
 app.use('/api/requests', requestRouter)
+app.use('/api/categories', categoriesRouter)
+app.use('/api/locations', locationsRouter)
 
 // Health check
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', message: 'School Inventory API is running!' })
 })
 

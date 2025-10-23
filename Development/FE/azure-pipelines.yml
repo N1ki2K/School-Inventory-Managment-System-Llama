@@ -1,6 +1,5 @@
-# Node.js
-# Build a general Node.js project with npm.
-# Add steps that analyze code, save build artifacts, deploy, and more:
+# School Inventory Management System - CI/CD Pipeline
+# Build and test the full-stack application
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
@@ -16,6 +15,40 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
-    npm install
-    npm run build
-  displayName: 'npm install and build'
+    npm install -g pnpm
+  displayName: 'Install pnpm'
+
+# Frontend Build
+- script: |
+    cd Development/FE
+    pnpm install --frozen-lockfile
+    pnpm build
+  displayName: 'Build Frontend'
+
+# Backend Build
+- script: |
+    cd Development/BE
+    pnpm install --frozen-lockfile
+    pnpm build
+  displayName: 'Build Backend'
+
+# Run Frontend Tests (optional)
+- script: |
+    cd Development/FE
+    pnpm test --run
+  displayName: 'Run Frontend Tests'
+  continueOnError: true
+
+# Archive Frontend Build Artifacts
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: 'Development/FE/dist'
+    artifactName: 'frontend-dist'
+  displayName: 'Publish Frontend Artifacts'
+
+# Archive Backend Build Artifacts
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: 'Development/BE/dist'
+    artifactName: 'backend-dist'
+  displayName: 'Publish Backend Artifacts'
